@@ -45,10 +45,11 @@ void setup() {
   int frontIn2 = 23;
   int frontIn3 = 24;
   int frontIn4 = 25;
+
   int backIn1 = 50;
   int backIn2 = 51;
   int backIn1 = 52;
-  int backPin2 = 53;
+  int backIn2 = 53;
 
 }
 
