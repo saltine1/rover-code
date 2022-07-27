@@ -1,6 +1,6 @@
 void setup() {
   Serial.begin (10000);
-  
+  // sensor pin setups
   pinMode(8, INPUT);  //echo front 
   pinMode(9, OUTPUT); //trig front
   
@@ -12,23 +12,43 @@ void setup() {
   
   pinMode(12, INPUT); // echo arm
   pinMode(10, OUTPUT); // trig arm
-
+  
+  // motor pin setups
+  pinMode(22, OUTPUT); // front left
+  pinMode(23, OUTPUT); // front left
+  pinMode(24, OUTPUT); // front right
+  pinMode(25, OUTPUT); // front right
+  
+  pinMode(50, OUTPUT); // back left
+  pinMode(51, OUTPUT); // back left
+  pinMode(52, OUTPUT); // back right
+  pinMode(53, OUTPUT); // back right
 }
 
-// Setup for ultrasonic sensors
-int echoPin1 = 8; // front sensor
-int trigPin1 = 9;
+// sensor var setups
+  int echoPin1 = 8; // front sensor
+  int trigPin1 = 9;
 
-int echoPin2 = 4; // left sensor
-int trigPin2 = 11;
+  int echoPin2 = 4; // left sensor
+  int trigPin2 = 11;
 
-int echoPin3 = 2; // right sensor
-int trigPin3 = 5;
+  int echoPin3 = 2; // right sensor
+  int trigPin3 = 5;
 
-int echoPin4 = 12; // arm sensor
-int trigPin4 = 10;
+  int echoPin4 = 12; // arm sensor
+  int trigPin4 = 10;
 
-long duration1, duration2, duration3, duration4, in1, in2, in3, in4;
+  long duration1, duration2, duration3, duration4, in1, in2, in3, in4;
+  
+  // motor var setups
+  int frontIn1 = 22; // In 1 and 2 are for the left motors, while In 3 and 4 are for the right motors
+  int frontIn2 = 23;
+  int frontIn3 = 24;
+  int frontIn4 = 25;
+  int backIn1 = 50;
+  int backIn2 = 51;
+  int backIn1 = 52;
+  int backPin2 = 53;
 
 }
 
