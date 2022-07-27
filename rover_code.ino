@@ -5,7 +5,7 @@ void setup() {
   pinMode(9, OUTPUT); //trig front
   
   pinMode(4, INPUT); // echo left
-  pinMode(11, OUTPUT); // echo left
+  pinMode(11, OUTPUT); // trig left
   
   pinMode(2, INPUT); // echo right
   pinMode(5, OUTPUT); // trig right
