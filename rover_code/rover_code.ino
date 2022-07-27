@@ -16,8 +16,8 @@ void setup() {
 }
 
 // Setup for ultrasonic sensors
-int echoPin = 8; // front sensor
-int trigPin = 9;
+int echoPin1 = 8; // front sensor
+int trigPin1 = 9;
 
 int echoPin2 = 4; // left sensor
 int trigPin2 = 11;
@@ -29,60 +29,44 @@ int echoPin4 = 12; // arm sensor
 int trigPin4 = 10;
 
 long duration1, duration2, duration3, duration4, in1, in2, in3, in4;
+
+}
+
+void trigOnOff(trigPinNum, trigPinNumVar) {
+  digitalWrite(trigPinNum, LOW); // trig off
+  delayMicroseconds(5);
+  digitalWrite(trigPinNum, HIGH); // trig on
+  delayMicroseconds(10);
+  digitalWrite(trigPinNumVar, LOW);
+}
+
+void signalEcho(echoPinNum, durationVar) {
+  pinmode(echoPinNum, INPUT);
+  durationVar = pulseIn(echoPinNum, HIGH);
+}
   
 
 void loop() {
   // Part 1: Obstacle Course
   // First, measure the distance from obstacles using ultrasonic sensors as it goes forwards
+  trigOnOff(9, trigPin1); // front
+  trigOnOff(11, trigPin2); // left
+  trigOnOff(5, trigPin3); // right
+  trigOnOff(10, trigPin4); // arm
   
-    digitalWrite(9, LOW); //trig off front
-    delayMicroseconds(5);
-    digitalWrite(9, HIGH);//trig on front
-    delayMicroseconds(10);
-    digitalWrite(trigPin, LOW);
+  signalEcho(8, duration1); // front
+  signalEcho(4, duration2); // left
+  signalEcho(2, duration3); // right
+  signalEcho(5, duration4); // arm
 
-    digitalWrite(11, LOW); //trig off left
-    delayMicroseconds(5);
-    digitalWrite(11, HIGH);//trig on left
-    delayMicroseconds(10);
-    digitalWrite(trigPin2, LOW);
-
-    digitalWrite(5, LOW); //trig off right
-    delayMicroseconds(5);
-    digitalWrite(5, HIGH);//trig on right
-    delayMicroseconds(10);
-    digitalWrite(trigPin3, LOW);
-
-    digitalWrite(10, LOW); //trig off arm
-    delayMicroseconds(5);
-    digitalWrite(10, HIGH);//trig on arm
-    delayMicroseconds(10);
-    digitalWrite(trigPin4, LOW);
-  
-    pinMode(8, INPUT); //recieve signal echo
-    duration1 = pulseIn(8, HIGH); //front sensor
-    pinMode(4, INPUT);
-    duration2 = pulseIn(4, HIGH); // left sensor
-    pinMode(2, INPUT);
-    duration3 = pulseIn(2, HIGH); // right sensor
-    pinMode(5, INPUT);
-    duration4= pulseIn(5, HIGH); // arm sensor
-  
-      //conversions
-    in1 = (duration1/2)/74; // front
-    
-    in2 = (duration2/2)/74; // left
-    
-    in3 = (duration3/2)/74; //right
-
-    in4 = (duration4/2)/74; // arm
+  //conversions
+  in1 = (duration1/2)/74; // front
+  in2 = (duration2/2)/74; // left
+  in3 = (duration3/2)/74; //right
+  in4 = (duration4/2)/74; // arm
   
   // Use if/else statements to determine if there is an obstacle
   // If it's closer
-    if (in <= 10){
-      
-    }
-
   // Use if/else statements to determine if there is a wall
   // Use if/else statements to determine if the object is on the right or left
   // 
