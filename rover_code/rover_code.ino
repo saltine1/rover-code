@@ -48,22 +48,15 @@ void setup() {
 
   int backIn1 = 50;
   int backIn2 = 51;
-  int backIn1 = 52;
-  int backIn2 = 53;
+  int backIn3 = 52;
+  int backIn4 = 53;
 
-}
-
-void trigOnOff(trigPinNum, trigPinNumVar) {
+void trigOnOff(int trigPinNum, int trigPinNumVar) {
   digitalWrite(trigPinNum, LOW); // trig off
   delayMicroseconds(5);
   digitalWrite(trigPinNum, HIGH); // trig on
   delayMicroseconds(10);
-  digitalWrite(trigPinNumVar, LOW);
-}
-
-void signalEcho(echoPinNum, durationVar) {
-  pinmode(echoPinNum, INPUT);
-  durationVar = pulseIn(echoPinNum, HIGH);
+  return digitalWrite(trigPinNumVar, LOW);
 }
   
 
@@ -75,10 +68,14 @@ void loop() {
   trigOnOff(5, trigPin3); // right
   trigOnOff(10, trigPin4); // arm
   
-  signalEcho(8, duration1); // front
-  signalEcho(4, duration2); // left
-  signalEcho(2, duration3); // right
-  signalEcho(5, duration4); // arm
+  pinMode(8, INPUT); //recieve signal echo
+  duration1 = pulseIn(8, HIGH); //front sensor
+  pinMode(4, INPUT);
+  duration2 = pulseIn(4, HIGH); // left sensor
+  pinMode(2, INPUT);
+  duration3 = pulseIn(2, HIGH); // right sensor
+  pinMode(5, INPUT);
+  duration4= pulseIn(5, HIGH); // arm sensor
 
   //conversions
   in1 = (duration1/2)/74; // front
