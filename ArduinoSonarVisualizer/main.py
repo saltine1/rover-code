@@ -27,6 +27,6 @@ while True:
     t.penup()
     t.goto(int(value[0]), int(value[1]))
     t.down()
-    t.dot(4 )
+    t.dot(4)
 
 
