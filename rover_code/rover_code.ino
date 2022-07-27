@@ -56,7 +56,7 @@ void trigOnOff(int trigPinNum, int trigPinNumVar) {
   delayMicroseconds(5);
   digitalWrite(trigPinNum, HIGH); // trig on
   delayMicroseconds(10);
-  return digitalWrite(trigPinNumVar, LOW);
+  digitalWrite(trigPinNumVar, LOW);
 }
   
 
@@ -80,11 +80,16 @@ void loop() {
   //conversions
   in1 = (duration1/2)/74; // front
   in2 = (duration2/2)/74; // left
-  in3 = (duration3/2)/74; //right
+  in3 = (duration3/2)/74; // right
   in4 = (duration4/2)/74; // arm
+
+  // WIP BELOW
   
   // Use if/else statements to determine if there is an obstacle
-  // If it's closer
+//  if (in <= ___){
+//    // WIP
+//  }
+//  else 
   // Use if/else statements to determine if there is a wall
   // Use if/else statements to determine if the object is on the right or left
   // 
