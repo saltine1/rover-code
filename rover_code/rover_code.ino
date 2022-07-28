@@ -248,6 +248,36 @@ int polar_to_cartesian(){
   return op;
 }
 
+boolean turnStarted = false;
+double tarAng;
+
+double ang_prevError = 0;
+
+const double kp = 0.1;
+const double kd = 0.05;
+
+boolean turn(int deg){
+  if(!turnStarted){
+      tarAng = get_gyro() + deg;
+    }
+
+  double error = get_gyro() - tarAng;
+
+  double de = error - ang_prevError;
+
+  double pid = kp * error + kd * de;
+
+  Move(-pid, pid);
+
+  if(abs(de) < 0.5){
+    turnStarted = false;
+    return true;
+  }else{
+    return false;
+  }
+  
+}
+
 void testing_periodic(){
   
 //  //conversions
@@ -323,6 +353,21 @@ void loop() {
   routine_periodic();
   testing_periodic();
 
-  
+  int state = 0;
+
+  switch(state){
+
+    case 0:
+      Move(0, 0);
+
+    case 1:
+      if(turn(90)){
+          state = 0;
+        }
+
+    default:
+      Move(0, 0)s
+    
+  }
   
 }
