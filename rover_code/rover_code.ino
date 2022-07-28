@@ -54,6 +54,7 @@ void reset_gyro(){
   }
 
 void update_gyro(){
+  imu.updateBias();
   cur_gyro += 0.001 * get_dt() * imu.gz();
   }
 
@@ -134,10 +135,6 @@ void setup() {
   radar_servo.write(theta);
   delay(5000);
 }
-
-}
-
-  
 
 void trigOnOff(int trigPinNum, int trigPinNumVar) {
   digitalWrite(trigPinNum, LOW); // trig off
@@ -251,7 +248,38 @@ int polar_to_cartesian(){
   return op;
 }
 
-void loop() {
+void testing_periodic(){
+  
+//  //conversions
+//  in1 = (duration1/2)/74; // front
+//  in2 = (duration2/2)/74; // left
+//  in3 = (duration3/2)/74; // right
+//  in4 = (duration4/2)/74; // arm
+//  analogWrite(26, 100); // front ENA pin
+//  analogWrite(27, 100); // front ENB pin
+//  analogWrite(47, 100); // back ENA pin
+//  analogWrite(48, 100); // back ENB pin
+
+//  Serial.print(String(ultrasonicDistance(0)) + " ");
+//  Serial.print(String(ultrasonicDistance(1)) + " ");
+//  Serial.print(String(ultrasonicDistance(2)) + " ");
+//  Serial.println(String(ultrasonicDistance(3)) + " ");
+//  delay(500);
+
+//  Serial.println(get_gyro());
+//  Serial.println(get_dt());
+
+  //  Move(500, 500);
+//  delay(2000);
+//  Move(-500, 500);
+//  delay(2000);
+//  Move(500, -500);
+//  delay(2000);
+//  Move(-500, -500);
+//  delay(2000);
+  }
+
+void ultrasonic_logic(){
   // Part 1: Obstacle Course
   // First, measure the distance from obstacles using ultrasonic sensors as it goes forwards
   trigOnOff(23, trigPin1); // front
@@ -268,32 +296,19 @@ void loop() {
 //  pinMode(5, INPUT);
 //  duration4= pulseIn(5, HIGH); // arm sensor
 //
-//  //conversions
-//  in1 = (duration1/2)/74; // front
-//  in2 = (duration2/2)/74; // left
-//  in3 = (duration3/2)/74; // right
-//  in4 = (duration4/2)/74; // arm
-//  analogWrite(26, 100); // front ENA pin
-//  analogWrite(27, 100); // front ENB pin
-//  analogWrite(47, 100); // back ENA pin
-//  analogWrite(48, 100); // back ENB pin
 
-  Serial.print(String(ultrasonicDistance(0)) + " ");
-  Serial.print(String(ultrasonicDistance(1)) + " ");
-  Serial.print(String(ultrasonicDistance(2)) + " ");
-  Serial.println(String(ultrasonicDistance(3)) + " ");
-  delay(500);
-
-  // Update gyro calibration
-  imu.updateBias();
-
+// WIP BELOW
+  
+// Use if/else statements to determine if there is an obstacle
+//  if (in <= ___){
+//    // WIP
+//  }
+//  else 
+  }
+  
+void routine_periodic(){
   update_gyro();
-
-  Serial.println(get_gyro());
-//  Serial.println(get_dt());
-
   set_timer();
-
   int d = lazer_measure();
 
   for(int i=0; i<1 ;i++){
@@ -301,24 +316,13 @@ void loop() {
   polar_to_cartesian();
   Serial.println();
   delay(100);
-  
-//  Move(500, 500);
-//  delay(2000);
-//  Move(-500, 500);
-//  delay(2000);
-//  Move(500, -500);
-//  delay(2000);
-//  Move(-500, -500);
-//  delay(2000);
-//  
-  // WIP BELOW
-  
-  // Use if/else statements to determine if there is an obstacle
-//  if (in <= ___){
-//    // WIP
-//  }
-//  else 
-  
-
+  }
 }
 
+void loop() {
+  routine_periodic();
+  testing_periodic();
+
+  
+  
+}
