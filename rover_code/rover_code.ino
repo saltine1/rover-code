@@ -23,6 +23,12 @@ void setup() {
   pinMode(51, OUTPUT); // back left
   pinMode(52, OUTPUT); // back right
   pinMode(53, OUTPUT); // back right
+
+  pinMode(26, OUTPUT); // front left speed
+  pinMode(27, OUTPUT); // front right speed
+
+  pinMode(47, OUTPUT); // back left speed
+  pinMode(48, OUTPUT); // back right speed
 }
 
 // sensor var setups
@@ -90,8 +96,6 @@ void loop() {
 //    // WIP
 //  }
 //  else 
-  // Use if/else statements to determine if there is a wall
-  // Use if/else statements to determine if the object is on the right or left
-  // 
   
+
 }
