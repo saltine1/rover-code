@@ -1,3 +1,9 @@
+#include <Wire.h>;
+#include <Servo.h>;
+#include <Math.h>
+#include "Adafruit_VL53L0X.h"
+#include <basicMPU6050.h> 
+
 // sensor var setups
 int echoPin1 = 22; // front sensor
 int trigPin1 = 23;
@@ -28,6 +34,44 @@ int frontENA = 4;
 int frontENB = 7;
 int backENA = 47;
 int backENB = 48;
+
+// Create instance
+basicMPU6050<> imu;
+
+double cur_gyro = 0;
+int t_prev;
+
+void set_timer(){
+  t_prev = millis();
+  }
+
+int get_dt(){
+  return millis() - t_prev;
+  }
+
+void reset_gyro(){
+  cur_gyro = 0;
+  }
+
+void update_gyro(){
+  cur_gyro += 0.001 * get_dt() * imu.gz();
+  }
+
+double get_gyro(){
+  return cur_gyro;
+  }
+
+Adafruit_VL53L0X lox = Adafruit_VL53L0X();
+Servo radar_servo;
+
+const int radar_servo_pin = 3;
+
+int theta = 90;
+boolean radar_pos = true;
+
+int data[2];
+int point[2];
+
 
 void setup() {
   Serial.begin(9600);
@@ -60,6 +104,37 @@ void setup() {
 
   pinMode(4, OUTPUT); // back left speed
   pinMode(7, OUTPUT); // back right speed
+
+  // Set registers - Always required
+  imu.setup();
+
+  // Initial calibration of gyro
+  imu.setBias();
+
+  set_timer();
+
+   Serial.begin(115200);
+
+  delay(500);
+
+  // wait until serial port opens for native USB devices
+  while (! Serial) {
+    delay(1);
+  }
+  
+  Serial.println("Adafruit VL53L0X test");
+  if (!lox.begin()) {
+    Serial.println(F("Failed to boot VL53L0X"));
+    while(1);
+  }
+  // power 
+  Serial.println(F("VL53L0X API Simple Ranging example\n\n")); 
+
+  radar_servo.attach(radar_servo_pin);
+  radar_servo.write(theta);
+  delay(5000);
+}
+
 }
 
   
@@ -119,6 +194,63 @@ double ultrasonicDistance(int N){
   
 }
 
+int lazer_measure(){
+  VL53L0X_RangingMeasurementData_t measure;
+    
+//  Serial.print("Reading a measurement... ");
+  lox.rangingTest(&measure, false); // pass in 'true' to get debug data printout!
+
+  if (measure.RangeStatus != 4) {  // phase failures have incorrect data
+//    Serial.print("Distance (mm): "); 
+//    Serial.println(measure.RangeMilliMeter);
+  } else {
+//    Serial.println(" out of range ");
+      return 0;
+  }
+  return measure.RangeMilliMeter;
+}
+
+void update_radar(){
+  if(radar_pos){
+    theta++;
+  }else{
+    theta--;  
+  }
+
+  radar_servo.write(theta);
+//  Serial.println(theta);
+
+  if(theta == 180 && radar_pos){
+    radar_pos = false;
+    Serial.println("c");
+    Serial.println("c");
+    }
+
+  if(theta == 0 && !radar_pos){
+    radar_pos = true;
+    Serial.println("c");
+    Serial.println("c");
+    }
+
+  int op[2];
+  data[0] = theta;
+  data[1] = lazer_measure();
+  Serial.print(String(point[0]) + " " + String(point[1]) + " ");
+  
+  return;
+}
+
+int polar_to_cartesian(){
+  double theta = M_PI * data[0] / 180;
+  int y = data[1] * sin(theta);
+  int x = data[1] * cos(theta);
+  int op[2];
+  point[0] = x;
+  point[1] = y;
+
+  return op;
+}
+
 void loop() {
   // Part 1: Obstacle Course
   // First, measure the distance from obstacles using ultrasonic sensors as it goes forwards
@@ -151,6 +283,24 @@ void loop() {
   Serial.print(String(ultrasonicDistance(2)) + " ");
   Serial.println(String(ultrasonicDistance(3)) + " ");
   delay(500);
+
+  // Update gyro calibration
+  imu.updateBias();
+
+  update_gyro();
+
+  Serial.println(get_gyro());
+//  Serial.println(get_dt());
+
+  set_timer();
+
+  int d = lazer_measure();
+
+  for(int i=0; i<1 ;i++){
+  update_radar();
+  polar_to_cartesian();
+  Serial.println();
+  delay(100);
   
 //  Move(500, 500);
 //  delay(2000);
