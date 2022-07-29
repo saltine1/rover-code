@@ -25,4 +25,5 @@ left servo: 28 <br>
 right servo: 44 <br>
 center servo: 45 <br>
 
- 
+<u>laser and gyro connect to SDA and SCL for I2C</u><br>
+
