@@ -22,9 +22,12 @@ int FRechoPin = 46; // front right sensor
 int FRtrigPin = 47;
 
 // servo var setups
-int Lservo = 28; // left servo
-int Rservo = 44; // right servo
-int Cservo = 45; // center servo
+int LservoPin = 28; // left servo
+int RservoPin = 44; // right servo
+int CservoPin = 45; // center servo
+Servo Lservo;
+Servo Rservo;
+Servo Cservo;
 
 long duration1, duration2, duration3, duration4, in1, in2, in3, in4;
 
@@ -114,6 +117,11 @@ void setup() {
   pinMode(rightENA, OUTPUT); // front right speed
   pinMode(rightENB, OUTPUT); // back right speed
 
+  // setups for servos
+  Rservo.attach(RservoPin);
+  Lservo.attach(LservoPin);
+  Cservo.attach(CservoPin);
+  
   // Set registers - Always required
   imu.setup();
 
@@ -328,7 +336,22 @@ void testing_periodic(){
     Move(-500, -500);
     delay(2000); 
   }
-  e
+  else if (controlInput == "a"){
+    Move(-500, 500);
+    delay(2000);
+  }
+  else if (controlInput == "d"){
+    Move(500, -500);
+    delay(2000);
+  }
+  else if (controlInput == "q"){
+    Rservo.write(90);
+    Lservo.write(90);
+  }
+  else if (controlInput == "e"){
+    Rservo.write();
+    Lservo.write();
+  }
   }
 
 void ultrasonic_logic(){
@@ -380,7 +403,7 @@ void loop() {
         }
 
     default:
-      Move(0, 0)s
+      Move(0, 0);
     
   }
   
