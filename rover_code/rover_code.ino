@@ -154,34 +154,34 @@ void trigOnOff(int trigPinNum, int trigPinNumVar) {
 
 void Move(int left, int right){
   if (left > 0){
-    digitalWrite(frontIn1, HIGH);
-    digitalWrite(frontIn2, LOW);
-    digitalWrite(backIn1, HIGH);
-    digitalWrite(frontIn2, LOW);
+    digitalWrite(leftIn1, HIGH);
+    digitalWrite(leftIn2, LOW);
+    digitalWrite(leftIn3, HIGH);
+    digitalWrite(leftIn4, LOW);
   }
   else{
-    digitalWrite(frontIn1, LOW);
-    digitalWrite(frontIn2, HIGH);
-    digitalWrite(backIn1, LOW);
-    digitalWrite(backIn2, HIGH);
+    digitalWrite(leftIn1, LOW);
+    digitalWrite(leftIn2, HIGH);
+    digitalWrite(leftIn3, LOW);
+    digitalWrite(leftIn4, HIGH);
     
   }
     if (right > 0){
-    digitalWrite(frontIn3, HIGH);
-    digitalWrite(frontIn4, LOW);
-    digitalWrite(backIn3, HIGH);
-    digitalWrite(frontIn4, LOW);
+    digitalWrite(rightIn1, HIGH);
+    digitalWrite(rightIn2, LOW);
+    digitalWrite(rightIn3, HIGH);
+    digitalWrite(rightIn4, LOW);
   }
   else{
-    digitalWrite(frontIn3, LOW);
-    digitalWrite(frontIn4, HIGH);
-    digitalWrite(backIn3, LOW);
-    digitalWrite(backIn4, HIGH);
+    digitalWrite(rightIn1, LOW);
+    digitalWrite(rightIn2, HIGH);
+    digitalWrite(rightIn3, LOW);
+    digitalWrite(rightIn4, HIGH);
   }
-  analogWrite(frontENA, int(abs(double(left))/1000*255));
-  analogWrite(backENA, int(abs(double(left))/1000*255));
-  analogWrite(frontENB, int(abs(double(right))/1000*255));
-  analogWrite(backENB, int(abs(double(right))/1000*255));
+  analogWrite(leftENA, int(abs(double(left))/1000*255));
+  analogWrite(leftENB, int(abs(double(left))/1000*255));
+  analogWrite(rightENA, int(abs(double(right))/1000*255));
+  analogWrite(rightENB, int(abs(double(right))/1000*255));
 }
 
 int ports[] = {22, 24, 26, 28};
@@ -319,6 +319,16 @@ void testing_periodic(){
   if (Serial.available() > 0){
     controlInput = Serial.readString();
   }
+
+  if (controlInput == "w"){
+   Move(500, 500);
+   delay(2000); 
+  }
+  else if (controlInput == "s"){
+    Move(-500, -500);
+    delay(2000); 
+  }
+  e
   }
 
 void ultrasonic_logic(){
