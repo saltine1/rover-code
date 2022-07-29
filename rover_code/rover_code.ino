@@ -36,8 +36,8 @@ int leftIn1 = 50; // front
 int leftIn2 = 51; // front
 int leftIn3 = 52; // back
 int leftIn4 = 53; // back
-int leftENA = 4;
-int leftENB = 5;
+int leftENA = 4; // front
+int leftENB = 5; // back
 
 // Create instance
 basicMPU6050<> imu;
@@ -80,34 +80,34 @@ int point[2];
 void setup() {
   Serial.begin(9600);
   // sensor pin setups
-  pinMode(echoPin1, INPUT);  //echo front 
-  pinMode(trigPin1, OUTPUT); //trig front
+  pinMode(FLechoPin, INPUT);  // echo front left
+  pinMode(FLtrigPin, OUTPUT); // trig front right
   
-  pinMode(echoPin2, INPUT); // echo left
-  pinMode(echoPin2, OUTPUT); // trig left
+  pinMode(LechoPin, INPUT); // echo left
+  pinMode(LechoPin, OUTPUT); // trig left
   
-  pinMode(2, INPUT); // echo right
-  pinMode(5, OUTPUT); // trig right
+  pinMode(RechoPin, INPUT); // echo right
+  pinMode(RtrigPin, OUTPUT); // trig right
   
-  pinMode(12, INPUT); // echo arm
-  pinMode(10, OUTPUT); // trig arm
+  pinMode(FRechoPin, INPUT); // echo front right
+  pinMode(FrechoPin, OUTPUT); // trig front right
   
   // motor pin setups
-  pinMode(22, OUTPUT); // front left
-  pinMode(23, OUTPUT); // front left
-  pinMode(24, OUTPUT); // front right
-  pinMode(25, OUTPUT); // front right
+  pinMode(leftIn1, OUTPUT); // front left
+  pinMode(leftIn2, OUTPUT); // front left
+  pinMode(leftIn3, OUTPUT); // back left
+  pinMode(leftIn4, OUTPUT); // back left
   
-  pinMode(2, OUTPUT); // back left
-  pinMode(3, OUTPUT); // back left
-  pinMode(5, OUTPUT); // back right
-  pinMode(6, OUTPUT); // back right
+  pinMode(rightIn1, OUTPUT); // front right
+  pinMode(rightIn2, OUTPUT); // front right
+  pinMode(rightIn3, OUTPUT); // back right
+  pinMode(rightIn4, OUTPUT); // back right
 
-  pinMode(26, OUTPUT); // front left speed
-  pinMode(27, OUTPUT); // front right speed
-
-  pinMode(4, OUTPUT); // back left speed
-  pinMode(7, OUTPUT); // back right speed
+  pinMode(leftENA, OUTPUT); // front left speed
+  pinMode(leftENB, OUTPUT); // back left speed
+  
+  pinMode(rightENA, OUTPUT); // front right speed
+  pinMode(rightENB, OUTPUT); // back right speed
 
   // Set registers - Always required
   imu.setup();
@@ -183,17 +183,20 @@ void Move(int left, int right){
   analogWrite(backENB, int(abs(double(right))/1000*255));
 }
 
-int ports[] = {22, 24, 26, 28};
+int echolist[] = {26, 8, 49, 46}; // in order: front left, left, right, and front right
+int triglist[] = {27, 9, 48, 47}; // "
+
 
 double ultrasonicDistance(int N){
-  int port = ports[N];
-  digitalWrite(23, LOW); // trig off
+  int echoport = echolist[N];
+  int trigport = triglist[N];
+  digitalWrite(trigport, LOW); // trig off
   delayMicroseconds(5);
-  digitalWrite(23, HIGH); // trig on
+  digitalWrite(trigport, HIGH); // trig on
   delayMicroseconds(10);
-  digitalWrite(23, LOW);
-  int duration = pulseIn(port, HIGH);
-  pinMode(port, INPUT);
+  digitalWrite(trigport, LOW);
+  int duration = pulseIn(echoport, HIGH);
+  pinMode(echoport, INPUT);
   return double((duration/2)/74);
   
 }
@@ -325,3 +328,4 @@ void loop() {
   
 
 }
+
