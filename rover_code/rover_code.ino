@@ -1,8 +1,12 @@
+
 #include <Wire.h>;
 #include <Servo.h>;
 #include <Math.h>
 #include "Adafruit_VL53L0X.h"
 #include <basicMPU6050.h> 
+
+// serial read var setup
+int controlInput = 0;
 
 // sensor var setups
 int FLechoPin = 26; // front left sensor
@@ -303,7 +307,7 @@ void testing_periodic(){
 //  Serial.println(get_gyro());
 //  Serial.println(get_dt());
 
-  //  Move(500, 500);
+//  Move(500, 500);
 //  delay(2000);
 //  Move(-500, 500);
 //  delay(2000);
@@ -311,6 +315,10 @@ void testing_periodic(){
 //  delay(2000);
 //  Move(-500, -500);
 //  delay(2000);
+
+  if (Serial.available() > 0){
+    controlInput = Serial.readString();
+  }
   }
 
 void ultrasonic_logic(){
@@ -330,14 +338,6 @@ void ultrasonic_logic(){
 //  pinMode(5, INPUT);
 //  duration4= pulseIn(5, HIGH); // arm sensor
 //
-
-// WIP BELOW
-  
-// Use if/else statements to determine if there is an obstacle
-//  if (in <= ___){
-//    // WIP
-//  }
-//  else 
   }
   
 void routine_periodic(){
