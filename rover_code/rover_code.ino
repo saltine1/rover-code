@@ -5,37 +5,41 @@
 #include <basicMPU6050.h> 
 
 // sensor var setups
-int echoPin1 = 22; // front sensor
-int trigPin1 = 23;
+int FLechoPin = 26; // front left sensor
+int FLtrigPin = 27;
 
-int echoPin2 = 24; // left sensor
-int trigPin2 = 25;
+int LechoPin = 8; // left sensor
+int LtrigPin = 9;
 
-int echoPin3 = 26; // right sensor
-int trigPin3 = 27;
+int RechoPin = 49; // right sensor
+int RtrigPin = 48;
 
-int echoPin4 = 28; // arm sensor
-int trigPin4 = 29;
+int FRechoPin = 46; // front right sensor
+int FRtrigPin = 47;
+
+// servo var setups
+int Lservo = 28; // left servo
+int Rservo = 44; // right servo
+int Cservo = 45; // center servo
 
 long duration1, duration2, duration3, duration4, in1, in2, in3, in4;
 
 // motor var setups
-int frontIn1 = 2; // In 1 and 2 are for the left motors, while In 3 and 4 are for the right motors
-int frontIn2 = 3;
-int frontIn3 = 5;
-int frontIn4 = 6;
+int rightIn1 = 22; //front
+int rightIn2 = 23; // front
+int rightIn3 = 24; // back
+int rightIn4 = 25; // back
+int rightENA = 2; // front
+int rightENB = 3; // back
 
-int backIn1 = 50;
-int backIn2 = 51;
-int backIn3 = 52;
-int backIn4 = 53;
+int leftIn1 = 50; // front
+int leftIn2 = 51; // front
+int leftIn3 = 52; // back
+int leftIn4 = 53; // back
+int leftENA = 4; // front
+int leftENB = 5; // back
 
-int frontENA = 4;
-int frontENB = 7;
-int backENA = 47;
-int backENB = 48;
-
-// Create instance
+// Create gyro instance
 basicMPU6050<> imu;
 
 double cur_gyro = 0;
@@ -77,34 +81,34 @@ int point[2];
 void setup() {
   Serial.begin(9600);
   // sensor pin setups
-  pinMode(echoPin1, INPUT);  //echo front 
-  pinMode(trigPin1, OUTPUT); //trig front
+  pinMode(FLechoPin, INPUT);  // echo front left
+  pinMode(FLtrigPin, OUTPUT); // trig front right
   
-  pinMode(echoPin2, INPUT); // echo left
-  pinMode(echoPin2, OUTPUT); // trig left
+  pinMode(LechoPin, INPUT); // echo left
+  pinMode(LechoPin, OUTPUT); // trig left
   
-  pinMode(2, INPUT); // echo right
-  pinMode(5, OUTPUT); // trig right
+  pinMode(RechoPin, INPUT); // echo right
+  pinMode(RtrigPin, OUTPUT); // trig right
   
-  pinMode(12, INPUT); // echo arm
-  pinMode(10, OUTPUT); // trig arm
+  pinMode(FRechoPin, INPUT); // echo front right
+  pinMode(FrechoPin, OUTPUT); // trig front right
   
   // motor pin setups
-  pinMode(22, OUTPUT); // front left
-  pinMode(23, OUTPUT); // front left
-  pinMode(24, OUTPUT); // front right
-  pinMode(25, OUTPUT); // front right
+  pinMode(leftIn1, OUTPUT); // front left
+  pinMode(leftIn2, OUTPUT); // front left
+  pinMode(leftIn3, OUTPUT); // back left
+  pinMode(leftIn4, OUTPUT); // back left
   
-  pinMode(2, OUTPUT); // back left
-  pinMode(3, OUTPUT); // back left
-  pinMode(5, OUTPUT); // back right
-  pinMode(6, OUTPUT); // back right
+  pinMode(rightIn1, OUTPUT); // front right
+  pinMode(rightIn2, OUTPUT); // front right
+  pinMode(rightIn3, OUTPUT); // back right
+  pinMode(rightIn4, OUTPUT); // back right
 
-  pinMode(26, OUTPUT); // front left speed
-  pinMode(27, OUTPUT); // front right speed
-
-  pinMode(4, OUTPUT); // back left speed
-  pinMode(7, OUTPUT); // back right speed
+  pinMode(leftENA, OUTPUT); // front left speed
+  pinMode(leftENB, OUTPUT); // back left speed
+  
+  pinMode(rightENA, OUTPUT); // front right speed
+  pinMode(rightENB, OUTPUT); // back right speed
 
   // Set registers - Always required
   imu.setup();
