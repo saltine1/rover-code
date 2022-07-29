@@ -5,35 +5,39 @@
 #include <basicMPU6050.h> 
 
 // sensor var setups
-int echoPin1 = 22; // front sensor
-int trigPin1 = 23;
+int FLechoPin = 26; // front left sensor
+int FLtrigPin = 27;
 
-int echoPin2 = 24; // left sensor
-int trigPin2 = 25;
+int LechoPin = 8; // left sensor
+int LtrigPin = 9;
 
-int echoPin3 = 26; // right sensor
-int trigPin3 = 27;
+int RechoPin = 49; // right sensor
+int RtrigPin = 48;
 
-int echoPin4 = 28; // arm sensor
-int trigPin4 = 29;
+int FRechoPin = 46; // front right sensor
+int FRtrigPin = 47;
+
+// servo var setups
+int Lservo = 28; // left servo
+int Rservo = 44; // right servo
+int Cservo = 45; // center servo
 
 long duration1, duration2, duration3, duration4, in1, in2, in3, in4;
 
 // motor var setups
-int frontIn1 = 2; // In 1 and 2 are for the left motors, while In 3 and 4 are for the right motors
-int frontIn2 = 3;
-int frontIn3 = 5;
-int frontIn4 = 6;
+int rightIn1 = 22; //front
+int rightIn2 = 23; // front
+int rightIn3 = 24; // back
+int rightIn4 = 25; // back
+int rightENA = 2; // front
+int rightENB = 3; // back
 
-int backIn1 = 50;
-int backIn2 = 51;
-int backIn3 = 52;
-int backIn4 = 53;
-
-int frontENA = 4;
-int frontENB = 7;
-int backENA = 47;
-int backENB = 48;
+int leftIn1 = 50; // front
+int leftIn2 = 51; // front
+int leftIn3 = 52; // back
+int leftIn4 = 53; // back
+int leftENA = 4;
+int leftENB = 5;
 
 // Create instance
 basicMPU6050<> imu;
@@ -54,7 +58,6 @@ void reset_gyro(){
   }
 
 void update_gyro(){
-  imu.updateBias();
   cur_gyro += 0.001 * get_dt() * imu.gz();
   }
 
@@ -135,6 +138,10 @@ void setup() {
   radar_servo.write(theta);
   delay(5000);
 }
+
+}
+
+  
 
 void trigOnOff(int trigPinNum, int trigPinNumVar) {
   digitalWrite(trigPinNum, LOW); // trig off
@@ -248,68 +255,7 @@ int polar_to_cartesian(){
   return op;
 }
 
-boolean turnStarted = false;
-double tarAng;
-
-double ang_prevError = 0;
-
-const double kp = 0.1;
-const double kd = 0.05;
-
-boolean turn(int deg){
-  if(!turnStarted){
-      tarAng = get_gyro() + deg;
-    }
-
-  double error = get_gyro() - tarAng;
-
-  double de = error - ang_prevError;
-
-  double pid = kp * error + kd * de;
-
-  Move(-pid, pid);
-
-  if(abs(de) < 0.5){
-    turnStarted = false;
-    return true;
-  }else{
-    return false;
-  }
-  
-}
-
-void testing_periodic(){
-  
-//  //conversions
-//  in1 = (duration1/2)/74; // front
-//  in2 = (duration2/2)/74; // left
-//  in3 = (duration3/2)/74; // right
-//  in4 = (duration4/2)/74; // arm
-//  analogWrite(26, 100); // front ENA pin
-//  analogWrite(27, 100); // front ENB pin
-//  analogWrite(47, 100); // back ENA pin
-//  analogWrite(48, 100); // back ENB pin
-
-//  Serial.print(String(ultrasonicDistance(0)) + " ");
-//  Serial.print(String(ultrasonicDistance(1)) + " ");
-//  Serial.print(String(ultrasonicDistance(2)) + " ");
-//  Serial.println(String(ultrasonicDistance(3)) + " ");
-//  delay(500);
-
-//  Serial.println(get_gyro());
-//  Serial.println(get_dt());
-
-  //  Move(500, 500);
-//  delay(2000);
-//  Move(-500, 500);
-//  delay(2000);
-//  Move(500, -500);
-//  delay(2000);
-//  Move(-500, -500);
-//  delay(2000);
-  }
-
-void ultrasonic_logic(){
+void loop() {
   // Part 1: Obstacle Course
   // First, measure the distance from obstacles using ultrasonic sensors as it goes forwards
   trigOnOff(23, trigPin1); // front
@@ -326,19 +272,32 @@ void ultrasonic_logic(){
 //  pinMode(5, INPUT);
 //  duration4= pulseIn(5, HIGH); // arm sensor
 //
+//  //conversions
+//  in1 = (duration1/2)/74; // front
+//  in2 = (duration2/2)/74; // left
+//  in3 = (duration3/2)/74; // right
+//  in4 = (duration4/2)/74; // arm
+//  analogWrite(26, 100); // front ENA pin
+//  analogWrite(27, 100); // front ENB pin
+//  analogWrite(47, 100); // back ENA pin
+//  analogWrite(48, 100); // back ENB pin
 
-// WIP BELOW
-  
-// Use if/else statements to determine if there is an obstacle
-//  if (in <= ___){
-//    // WIP
-//  }
-//  else 
-  }
-  
-void routine_periodic(){
+  Serial.print(String(ultrasonicDistance(0)) + " ");
+  Serial.print(String(ultrasonicDistance(1)) + " ");
+  Serial.print(String(ultrasonicDistance(2)) + " ");
+  Serial.println(String(ultrasonicDistance(3)) + " ");
+  delay(500);
+
+  // Update gyro calibration
+  imu.updateBias();
+
   update_gyro();
+
+  Serial.println(get_gyro());
+//  Serial.println(get_dt());
+
   set_timer();
+
   int d = lazer_measure();
 
   for(int i=0; i<1 ;i++){
@@ -346,28 +305,23 @@ void routine_periodic(){
   polar_to_cartesian();
   Serial.println();
   delay(100);
-  }
-}
-
-void loop() {
-  routine_periodic();
-  testing_periodic();
-
-  int state = 0;
-
-  switch(state){
-
-    case 0:
-      Move(0, 0);
-
-    case 1:
-      if(turn(90)){
-          state = 0;
-        }
-
-    default:
-      Move(0, 0)s
-    
-  }
   
+//  Move(500, 500);
+//  delay(2000);
+//  Move(-500, 500);
+//  delay(2000);
+//  Move(500, -500);
+//  delay(2000);
+//  Move(-500, -500);
+//  delay(2000);
+//  
+  // WIP BELOW
+  
+  // Use if/else statements to determine if there is an obstacle
+//  if (in <= ___){
+//    // WIP
+//  }
+//  else 
+  
+
 }
