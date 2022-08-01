@@ -264,6 +264,17 @@ int polar_to_cartesian(){
   return op;
 }
 
+void set_claw(int ang){
+  // 0 for stright forward
+  // 90 for open
+  // -90 for closed;
+  int left = 90 - ang;
+  int right = ang + 90;
+
+  Lservo.write(left);
+  Rservo.write(right);
+}
+
 boolean turnStarted = false;
 double tarAng;
 
@@ -325,7 +336,13 @@ void testing_periodic(){
   delay(2000);
 
   Serial.println("go");
+  }
 
+
+int claw_ang = 0;
+
+void keyboard_control(){
+  
   if (controlInput == "w"){
    Move(500, 500);
    delay(2000); 
@@ -342,15 +359,18 @@ void testing_periodic(){
     Move(500, -500);
     delay(2000);
   }
-  else if (controlInput == "q"){
-    Rservo.write(90);
-    Lservo.write(90);
+  else if (controlInput == "j"){
+    //claw open
+    claw_ang ++; 
+    set_claw(claw_ang);
   }
-  else if (controlInput == "e"){
-    Rservo.write();
-    Lservo.write();
+  else if (controlInput == "k"){
+    // claw close;
+    claw_ang ++; 
+    set_claw(claw_ang);
   }
-  }
+
+}
 
 void ultrasonic_logic(){
   // Part 1: Obstacle Course
