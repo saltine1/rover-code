@@ -5,9 +5,6 @@
 #include "Adafruit_VL53L0X.h"
 #include <basicMPU6050.h> 
 
-// serial read var setup
-int controlInput = 0;
-
 // sensor var setups
 int FLechoPin = 26; // front left sensor
 int FLtrigPin = 27;
@@ -36,15 +33,15 @@ int rightIn1 = 22; //front
 int rightIn2 = 23; // front
 int rightIn3 = 24; // back
 int rightIn4 = 25; // back
-int rightENA = 2; // front
-int rightENB = 3; // back
+int rightENA = 4; // front
+int rightENB = 5; // back
 
 int leftIn1 = 50; // front
 int leftIn2 = 51; // front
 int leftIn3 = 52; // back
 int leftIn4 = 53; // back
-int leftENA = 4; // front
-int leftENB = 5; // back
+int leftENA = 6; // front
+int leftENB = 7; // back
 
 // Create gyro instance
 basicMPU6050<> imu;
@@ -233,22 +230,22 @@ void update_radar(){
   radar_servo.write(theta);
 //  Serial.println(theta);
 
-  if(theta == 180 && radar_pos){
-    radar_pos = false;
-    Serial.println("c");
-    Serial.println("c");
-    }
-
-  if(theta == 0 && !radar_pos){
-    radar_pos = true;
-    Serial.println("c");
-    Serial.println("c");
-    }
+//  if(theta == 180 && radar_pos){
+//    radar_pos = false;
+//    Serial.println("c");
+//    Serial.println("c");
+//    }
+//
+//  if(theta == 0 && !radar_pos){
+//    radar_pos = true;
+//    Serial.println("c");
+//    Serial.println("c");
+//    }
 
   int op[2];
   data[0] = theta;
   data[1] = lazer_measure();
-  Serial.print(String(point[0]) + " " + String(point[1]) + " ");
+//  Serial.print(String(point[0]) + " " + String(point[1]) + " ");
   
   return;
 }
@@ -341,34 +338,43 @@ void testing_periodic(){
 
 int claw_ang = 0;
 
+// serial read var setup
+char controlInput = 0;
+
 void keyboard_control(){
+
+  controlInput = Serial.read();
   
-  if (controlInput == "w"){
+  if (controlInput == 'w'){
    Move(500, 500);
-   delay(2000); 
+   delay(100); 
   }
-  else if (controlInput == "s"){
+  else if (controlInput == 's'){
     Move(-500, -500);
-    delay(2000); 
+   delay(100); 
   }
-  else if (controlInput == "a"){
+  else if (controlInput == 'a'){
     Move(-500, 500);
-    delay(2000);
+   delay(100); 
   }
-  else if (controlInput == "d"){
+  else if (controlInput == 'd'){
     Move(500, -500);
-    delay(2000);
+   delay(100); 
   }
-  else if (controlInput == "j"){
+  else if (controlInput == 'j'){
     //claw open
     claw_ang ++; 
     set_claw(claw_ang);
   }
-  else if (controlInput == "k"){
+  else if (controlInput == 'k'){
     // claw close;
     claw_ang ++; 
     set_claw(claw_ang);
+  }else{
+    Move(0, 0);
   }
+
+  Serial.println(controlInput);
 
 }
 
@@ -426,8 +432,10 @@ void competition_logic(){
 
 void loop() {
   routine_periodic();
-  testing_periodic();
+//  testing_periodic();
 
   competition_logic();
+
+  keyboard_control();
   
 }
