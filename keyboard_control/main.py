@@ -24,5 +24,5 @@ while True:
     except TypeError:
         pass
 
-    print("--- %s seconds ---" % (time.time() - start_time))
+    # print("--- %s seconds ---" % (time.time() - start_time))
 

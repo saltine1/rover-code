@@ -158,7 +158,7 @@ void trigOnOff(int trigPinNum, int trigPinNumVar) {
 }
 
 void Move(int left, int right){
-  if (left > 0){
+  if (left < 0){
     digitalWrite(leftIn1, LOW);
     digitalWrite(leftIn2, HIGH);
     digitalWrite(leftIn3, LOW);
@@ -171,7 +171,7 @@ void Move(int left, int right){
     digitalWrite(leftIn4, LOW);
     
   }
-    if (right > 0){
+    if (right < 0){
     digitalWrite(rightIn1, HIGH);
     digitalWrite(rightIn2, LOW);
     digitalWrite(rightIn3, HIGH);
