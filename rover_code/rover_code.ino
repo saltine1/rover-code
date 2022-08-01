@@ -83,7 +83,8 @@ int point[2];
 
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
+  Serial.println("Starting setup");
   // sensor pin setups
   pinMode(FLechoPin, INPUT);  // echo front left
   pinMode(FLtrigPin, OUTPUT); // trig front right
@@ -95,7 +96,7 @@ void setup() {
   pinMode(RtrigPin, OUTPUT); // trig right
   
   pinMode(FRechoPin, INPUT); // echo front right
-  pinMode(FrechoPin, OUTPUT); // trig front right
+  pinMode(FRechoPin, OUTPUT); // trig front right
   
   // motor pin setups
   pinMode(leftIn1, OUTPUT); // front left
@@ -114,6 +115,7 @@ void setup() {
   pinMode(rightENA, OUTPUT); // front right speed
   pinMode(rightENB, OUTPUT); // back right speed
 
+  Serial.println("IMU setup");
   // Set registers - Always required
   imu.setup();
 
@@ -121,27 +123,25 @@ void setup() {
   imu.setBias();
 
   set_timer();
-
-   Serial.begin(115200);
-
-  delay(500);
+  Serial.println("done!");
 
   // wait until serial port opens for native USB devices
-  while (! Serial) {
-    delay(1);
-  }
+//  while (! Serial) {
+//    delay(1);
+//  }
   
   Serial.println("Adafruit VL53L0X test");
   if (!lox.begin()) {
     Serial.println(F("Failed to boot VL53L0X"));
-    while(1);
+    Serial.println(F("Proceeding without laser sensor"));
   }
+  
   // power 
-  Serial.println(F("VL53L0X API Simple Ranging example\n\n")); 
-
   radar_servo.attach(radar_servo_pin);
   radar_servo.write(theta);
   delay(5000);
+
+  Serial.print("Setup complete");
 }
 
 void trigOnOff(int trigPinNum, int trigPinNumVar) {
@@ -307,37 +307,39 @@ void testing_periodic(){
 //  Serial.println(get_gyro());
 //  Serial.println(get_dt());
 
-//  Move(500, 500);
-//  delay(2000);
-//  Move(-500, 500);
-//  delay(2000);
-//  Move(500, -500);
-//  delay(2000);
-//  Move(-500, -500);
-//  delay(2000);
+  Move(500, 500);
+  delay(2000);
+  Move(-500, 500);
+  delay(2000);
+  Move(500, -500);
+  delay(2000);
+  Move(-500, -500);
+  delay(2000);
 
-  if (Serial.available() > 0){
-    controlInput = Serial.readString();
-  }
+  Serial.println("go");
 
-  if (controlInput == "w"){
-   Move(500, 500);
-   delay(2000); 
-  }
-  else if (controlInput == "s"){
-    Move(-500, -500);
-    delay(2000); 
-  }
-  e
+//  if (Serial.available() > 0){
+//    controlInput = Serial.readString();
+//  }
+//
+//  if (controlInput == "w"){
+//   Move(500, 500);
+//   delay(2000); 
+//  }
+//  else if (controlInput == "s"){
+//    Move(-500, -500);
+//    delay(2000); 
+//  }
+  
   }
 
 void ultrasonic_logic(){
   // Part 1: Obstacle Course
   // First, measure the distance from obstacles using ultrasonic sensors as it goes forwards
-  trigOnOff(23, trigPin1); // front
-  trigOnOff(25, trigPin2); // left
-  trigOnOff(27, trigPin3); // right
-  trigOnOff(29, trigPin4); // arm
+//  trigOnOff(23, trigPin1); // front
+//  trigOnOff(25, trigPin2); // left
+//  trigOnOff(27, trigPin3); // right
+//  trigOnOff(29, trigPin4); // arm
 //  
 //  pinMode(8, INPUT); //recieve signal echo
 //  duration1 = pulseIn(8, HIGH); //front sensor
@@ -363,10 +365,7 @@ void routine_periodic(){
   }
 }
 
-void loop() {
-  routine_periodic();
-  testing_periodic();
-
+void competition_logic(){
   int state = 0;
 
   switch(state){
@@ -380,8 +379,16 @@ void loop() {
         }
 
     default:
-      Move(0, 0)s
+      Move(0, 0);
     
   }
+  
+}
+
+void loop() {
+  routine_periodic();
+  testing_periodic();
+
+  competition_logic();
   
 }
