@@ -159,16 +159,16 @@ void trigOnOff(int trigPinNum, int trigPinNumVar) {
 
 void Move(int left, int right){
   if (left > 0){
-    digitalWrite(leftIn1, HIGH);
-    digitalWrite(leftIn2, LOW);
-    digitalWrite(leftIn3, HIGH);
-    digitalWrite(leftIn4, LOW);
-  }
-  else{
     digitalWrite(leftIn1, LOW);
     digitalWrite(leftIn2, HIGH);
     digitalWrite(leftIn3, LOW);
     digitalWrite(leftIn4, HIGH);
+  }
+  else{
+    digitalWrite(leftIn1, HIGH);
+    digitalWrite(leftIn2, LOW);
+    digitalWrite(leftIn3, HIGH);
+    digitalWrite(leftIn4, LOW);
     
   }
     if (right > 0){

@@ -7,7 +7,7 @@ connected = False
 import time
 
 try:
-    arduino = serial.Serial(port='/dev/cu.usbmodem21101', baudrate=115200, timeout=.1)
+    arduino = serial.Serial(port='/dev/cu.usbmodem1101', baudrate=115200, timeout=.1)
     connected = True
 except SerialException:
     print("arduino not connected")
