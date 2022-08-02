@@ -1,6 +1,6 @@
 # Importing Libraries
 import serial
-import keyboard
+from pynput import keyboard
 from serial import SerialException
 
 connected = False
@@ -16,13 +16,21 @@ except SerialException:
 while True:
     start_time = time.time()
 
-    k = keyboard.read_key()
+    # The event listener will be running in this block
+    with keyboard.Events() as events:
+        # Block at most one second
+        event = events.get(0.1)
+        if event is None:
+            pass
+        else:
+            k = event.key
+            try:
+                arduino.write(k.encode('utf-8'))
+            except (TypeError, NameError, AttributeError) as e:
+                print(e)
+                pass
 
-    try:
-        serial.Serial.write(k)
-        print(k)
-    except TypeError:
-        pass
+            print(k)
 
     # print("--- %s seconds ---" % (time.time() - start_time))
 
