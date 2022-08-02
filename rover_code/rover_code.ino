@@ -325,9 +325,9 @@ void testing_periodic(){
 
   Move(500, 500);
   delay(2000);
-  Move(-500, 500);
+  Move(100, 500);
   delay(2000);
-  Move(500, -500);
+  Move(500, 100);
   delay(2000);
   Move(-500, -500);
   delay(2000);
@@ -432,8 +432,7 @@ void competition_logic(){
 
 void loop() {
   routine_periodic();
-//  testing_periodic();
-
+  testing_periodic();
   competition_logic();
 
   keyboard_control();
