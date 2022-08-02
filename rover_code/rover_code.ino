@@ -324,14 +324,14 @@ void testing_periodic(){
 //  Serial.println(get_gyro());
 //  Serial.println(get_dt());
 
-//  Move(500, 500);
-//  delay(2000);
-//  Move(-500, 500);
-//  delay(2000);
-//  Move(500, -500);
-//  delay(2000);
-//  Move(-500, -500);
-//  delay(2000);
+  Move(500, 500);
+  delay(2000);
+  Move(100, 500);
+  delay(2000);
+  Move(500, 100);
+  delay(2000);
+  Move(-500, -500);
+  delay(2000);
 
   Serial.println("go");
 
