@@ -6,7 +6,7 @@
 Adafruit_VL53L0X lox = Adafruit_VL53L0X();
 Servo radar_servo;
 
-const int radar_servo_pin = 3;
+const int radar_servo_pin = 45;
 
 int theta = 90;
 boolean radar_pos = true;

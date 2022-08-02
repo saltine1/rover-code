@@ -71,9 +71,6 @@ double get_gyro(){
   }
 
 Adafruit_VL53L0X lox = Adafruit_VL53L0X();
-Servo radar_servo;
-
-const int radar_servo_pin = 3;
 
 int theta = 90;
 boolean radar_pos = true;
@@ -119,7 +116,6 @@ void setup() {
   // setups for servos
   Rservo.attach(RservoPin);
   Lservo.attach(LservoPin);
-  Cservo.attach(CservoPin);
   
   // Set registers - Always required
   imu.setup();
@@ -140,10 +136,9 @@ void setup() {
     Serial.println(F("Failed to boot VL53L0X"));
     Serial.println(F("Proceeding without laser sensor"));
   }
+
+  set_claw(0);
   
-  // power 
-  radar_servo.attach(radar_servo_pin);
-  radar_servo.write(theta);
   delay(5000);
 
   Serial.print("Setup complete");
@@ -189,7 +184,7 @@ void Move(int left, int right){
   analogWrite(rightENB, int(abs(double(right))/1000*255));
 }
 
-int ports[] = {22, 24, 26, 28};
+int ports[] = {LechoPin, FLechoPin, FRechoPin, RechoPin};
 
 double ultrasonicDistance(int N){
   int port = ports[N];
@@ -227,7 +222,7 @@ void update_radar(){
     theta--;  
   }
 
-  radar_servo.write(theta);
+  Cservo.write(theta);
 //  Serial.println(theta);
 
 //  if(theta == 180 && radar_pos){
@@ -270,6 +265,10 @@ void set_claw(int ang){
 
   Lservo.write(left);
   Rservo.write(right);
+
+//  printf("claw output: %d %d",left, right);
+
+  Serial.print(String(left) + " " + String(right));
 }
 
 boolean turnStarted = false;
@@ -299,6 +298,8 @@ boolean turn(int deg){
   }else{
     return false;
   }
+
+//  Serial.printf()
   
 }
 
@@ -323,17 +324,23 @@ void testing_periodic(){
 //  Serial.println(get_gyro());
 //  Serial.println(get_dt());
 
-  Move(500, 500);
-  delay(2000);
-  Move(-500, 500);
-  delay(2000);
-  Move(500, -500);
-  delay(2000);
-  Move(-500, -500);
-  delay(2000);
+//  Move(500, 500);
+//  delay(2000);
+//  Move(-500, 500);
+//  delay(2000);
+//  Move(500, -500);
+//  delay(2000);
+//  Move(-500, -500);
+//  delay(2000);
 
   Serial.println("go");
-  }
+
+  set_claw(90);
+  delay(1000);
+
+  set_claw(-90);
+  delay(1000);
+}
 
 
 int claw_ang = 0;
@@ -405,13 +412,13 @@ void routine_periodic(){
   for(int i=0; i<1 ;i++){
   update_radar();
   polar_to_cartesian();
-  Serial.println();
-  delay(100);
+//  Serial.println();
+//  delay(100);
   }
 }
 
 void competition_logic(){
-  int state = 0;
+  int state = 1;
 
   switch(state){
 
@@ -432,10 +439,10 @@ void competition_logic(){
 
 void loop() {
   routine_periodic();
-//  testing_periodic();
+  testing_periodic();
 
-  competition_logic();
+//  competition_logic();
 
-  keyboard_control();
+//  keyboard_control();
   
 }
