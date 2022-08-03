@@ -116,6 +116,7 @@ void setup() {
   // setups for servos
   Rservo.attach(RservoPin);
   Lservo.attach(LservoPin);
+  Cservo.attach(CservoPin);
   
   // Set registers - Always required
   imu.setup();
@@ -323,22 +324,22 @@ void testing_periodic(){
 
 //  Serial.println(get_gyro());
 //  Serial.println(get_dt());
-
-  Move(500, 500);
-  delay(2000);
-  Move(100, 500);
-  delay(2000);
-  Move(500, 100);
-  delay(2000);
-  Move(-500, -500);
-  delay(2000);
+//
+//  Move(500, 500);
+//  delay(2000);
+//  Move(100, 500);
+//  delay(2000);
+//  Move(500, 100);
+//  delay(2000);
+//  Move(-500, -500);
+//  delay(2000);
 
   Serial.println("go");
 
   set_claw(90);
   delay(1000);
 
-  set_claw(-90);
+  set_claw(45);
   delay(1000);
 }
 
@@ -386,22 +387,27 @@ void keyboard_control(){
 }
 
 void ultrasonic_logic(){
-  // Part 1: Obstacle Course
-  // First, measure the distance from obstacles using ultrasonic sensors as it goes forwards
-//  trigOnOff(23, trigPin1); // front
-//  trigOnOff(25, trigPin2); // left
-//  trigOnOff(27, trigPin3); // right
-//  trigOnOff(29, trigPin4); // arm
-//  
-//  pinMode(8, INPUT); //recieve signal echo
-//  duration1 = pulseIn(8, HIGH); //front sensor
-//  pinMode(4, INPUT);
-//  duration2 = pulseIn(4, HIGH); // left sensor
-//  pinMode(2, INPUT);
-//  duration3 = pulseIn(2, HIGH); // right sensor
-//  pinMode(5, INPUT);
-//  duration4= pulseIn(5, HIGH); // arm sensor
-//
+  // Measure the distance from obstacles using ultrasonic sensors as it goes forwards
+  trigOnOff(23, FRtrigPin); // front right
+  trigOnOff(25, LtrigPin); // left
+  trigOnOff(27, RtrigPin); // right
+  trigOnOff(29, FLtrigPin); // front left
+  
+  pinMode(FLechoPin, INPUT); //recieve signal echo
+  FLduration = pulseIn(FLechoPin , HIGH); //front left sensor
+  pinMode(LechoPin, INPUT);
+  Lduration = pulseIn(LechoPin, HIGH); // left sensor
+  pinMode(RechoPin, INPUT);
+  Rduration = pulseIn(RechoPin, HIGH); // right sensor
+  pinMode(FRechoPin, INPUT);
+  FRduration= pulseIn(FRechoPin, HIGH); // front right sensor
+
+  // convert duration to inches
+  FLinches = (duration1/2)/74; // front left
+  Linches = (duration2/2)/74; // left
+  Rinches = (duration3/2)/74; // right
+  FRinches = (duration4/2)/74; // front right
+
   }
   
 void routine_periodic(){
@@ -418,22 +424,44 @@ void routine_periodic(){
 }
 
 void competition_logic(){
-  int state = 1;
-
-  switch(state){
-
-    case 0:
-      Move(0, 0);
-
-    case 1:
-      if(turn(90)){
-          state = 0;
-        }
-
-    default:
-      Move(0, 0);
-    
+//  int state = 1;
+//
+//  switch(state){
+//
+//    case 0:
+//      Move(0, 0);
+//
+//    case 1:
+//      if(turn(90)){
+//          state = 0;
+//        }
+//
+//    default:
+//      Move(0, 0);
+//    
+  boolean courseEnd = false;
+  while (FLinches >= 5 && FRinches >= 5){
+    Move(500,500);
   }
+  if (FLinches < 5 && FRinches < 5){
+    Move(500, 250);
+    delay(2000);
+    while (Linches < 4){
+      Move(500,500);
+    }
+    if (Linches >= 4){
+      Move(250, 500);
+      delay(2000);
+    }
+    else if (Linches < 4 && FLinches >= 5 && FRinches >= 5){
+      // open claw
+      courseEnd = true;
+    }
+    if (courseEnd){
+      while 
+    }
+  }
+
   
 }
 
