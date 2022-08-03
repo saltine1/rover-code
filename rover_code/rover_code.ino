@@ -18,6 +18,8 @@ int RtrigPin = 48;
 int FRechoPin = 46; // front right sensor
 int FRtrigPin = 47;
 
+int FLduration, Lduration, Rduration, FRduration, FLinches, Linches, Rinches, FRinches;
+
 // servo var setups
 int LservoPin = 28; // left servo
 int RservoPin = 44; // right servo
@@ -80,7 +82,7 @@ int point[2];
 
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(9600);
   Serial.println("Starting setup");
   // sensor pin setups
   pinMode(FLechoPin, INPUT);  // echo front left
@@ -325,22 +327,22 @@ void testing_periodic(){
 //  Serial.println(get_gyro());
 //  Serial.println(get_dt());
 //
-//  Move(500, 500);
-//  delay(2000);
-//  Move(100, 500);
-//  delay(2000);
-//  Move(500, 100);
-//  delay(2000);
-//  Move(-500, -500);
-//  delay(2000);
+  Move(500, 500);
+  delay(2000);
+  Move(100, 500);
+  delay(2000);
+  Move(500, 100);
+  delay(2000);
+  Move(-500, -500);
+  delay(2000);
 
   Serial.println("go");
-
-  set_claw(90);
-  delay(1000);
-
-  set_claw(45);
-  delay(1000);
+//
+//  set_claw(90);
+//  delay(1000);
+//
+//  set_claw(45);
+//  delay(1000);
 }
 
 
@@ -444,8 +446,13 @@ void competition_logic(){
     Move(500,500);
   }
   if (FLinches < 5 && FRinches < 5){
-    Move(500, 250);
-    delay(2000);
+    if (Rinches <= Linches){
+      Move(250, 500);
+      delay(2000);
+    }
+    else{
+      Move(500,250);
+    }
     while (Linches < 4){
       Move(500,500);
     }
@@ -458,7 +465,7 @@ void competition_logic(){
       courseEnd = true;
     }
     if (courseEnd){
-      while 
+      Serial.println("wahoo");
     }
   }
 
@@ -466,11 +473,20 @@ void competition_logic(){
 }
 
 void loop() {
-  routine_periodic();
-  testing_periodic();
+//  routine_periodic();
+//  testing_periodic();
+//
+////  competition_logic();
+//
+////  keyboard_control();
 
-//  competition_logic();
-
-//  keyboard_control();
+Move(500, 500);
+delay(2000);
+Move(250, 500);
+delay(2000);
+Move(500, 250);
+delay(2000);
+Move(-500, -500);
+delay(2000);
   
 }
