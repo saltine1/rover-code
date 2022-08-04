@@ -21,7 +21,7 @@ int FRtrigPin = 49;
 int FLduration, Lduration, Rduration, FRduration, FLinches, Linches, Rinches, FRinches;
 
 // servo var setups
-int LservoPin = 3; // left servo
+int LservoPin = 1; // left servo
 int RservoPin = 2; // right servo
 int CservoPin = 12; // center servo
 Servo Lservo;
@@ -43,41 +43,34 @@ int leftIn4 = 25; // back
 int leftENA = 6; // front
 int leftENB = 7; // back
 
-//// Create gyro instance
-//basicMPU6050<> imu;
-//
-//double cur_gyro = 0;
-//int t_prev;
-//
-//void set_timer(){
-//  t_prev = millis();
-//  }
-//
-//int get_dt(){
-//  return millis() - t_prev;
-//  }
-//
-//void reset_gyro(){
-//  cur_gyro = 0;
-//  }
-//
-//void update_gyro(){
-//  imu.updateBias();
-//  cur_gyro += 0.001 * get_dt() * imu.gz();
-//  }
-//
-//double get_gyro(){
-//  return cur_gyro;
-//  }
-//
-//Adafruit_VL53L0X lox = Adafruit_VL53L0X();
-//
-//int theta = 90;
-//boolean radar_pos = true;
-//
-//int data[2];
-//int point[2];
+// Create gyro instance
+basicMPU6050<> imu;
 
+double cur_gyro = 0;
+int t_prev;
+
+void set_timer(){
+  t_prev = millis();
+  }
+
+int get_dt(){
+  return millis() - t_prev;
+  }
+
+void reset_gyro(){
+  cur_gyro = 0;
+  }
+
+void update_gyro(){
+  imu.updateBias();
+  cur_gyro += 0.001 * get_dt() * imu.gz();
+  }
+
+double get_gyro(){
+  return cur_gyro;
+  }
+
+Adafruit_VL53L0X lox = Adafruit_VL53L0X();
 
 void setup() {
   Serial.begin(9600);
@@ -186,88 +179,96 @@ void Move(int left, int right){
   analogWrite(rightENB, int(abs(double(right))/1000*255));
 }
 
-//int ports[] = {LechoPin, FLechoPin, FRechoPin, RechoPin};
-//
-//double ultrasonicDistance(int N){
-//  int port = ports[N];
-//  digitalWrite(23, LOW); // trig off
-//  delayMicroseconds(5);
-//  digitalWrite(23, HIGH); // trig on
-//  delayMicroseconds(10);
-//  digitalWrite(23, LOW);
-//  int duration = pulseIn(port, HIGH);
-//  pinMode(port, INPUT);
-//  return double((duration/2)/74);
-//  
-//}
+int ports[] = {LechoPin, FLechoPin, FRechoPin, RechoPin};
 
-//int lazer_measure(){
-//  VL53L0X_RangingMeasurementData_t measure;
-//    
-////  Serial.print("Reading a measurement... ");
-//  lox.rangingTest(&measure, false); // pass in 'true' to get debug data printout!
-//
-//  if (measure.RangeStatus != 4) {  // phase failures have incorrect data
-////    Serial.print("Distance (mm): "); 
-////    Serial.println(measure.RangeMilliMeter);
-//  } else {
-////    Serial.println(" out of range ");
-//      return 0;
-//  }
-//  return measure.RangeMilliMeter;
-//}
-//
-//void update_radar(){
-//  if(radar_pos){
-//    theta++;
-//  }else{
-//    theta--;  
-//  }
-//
-//  Cservo.write(theta);
-////  Serial.println(theta);
-//
-////  if(theta == 180 && radar_pos){
-////    radar_pos = false;
-////    Serial.println("c");
-////    Serial.println("c");
-////    }
-////
-////  if(theta == 0 && !radar_pos){
-////    radar_pos = true;
-////    Serial.println("c");
-////    Serial.println("c");
-////    }
-//
-//  int op[2];
-//  data[0] = theta;
-//  data[1] = lazer_measure();
-////  Serial.print(String(point[0]) + " " + String(point[1]) + " ");
-//  
-//  return;
-//}
-//
-//int polar_to_cartesian(){
-//  double theta = M_PI * data[0] / 180;
-//  int y = data[1] * sin(theta);
-//  int x = data[1] * cos(theta);
-//  int op[2];
-//  point[0] = x;
-//  point[1] = y;
-//
-//  return op;
-//}
+double ultrasonicDistance(int N){
+  int port = ports[N];
+  digitalWrite(23, LOW); // trig off
+  delayMicroseconds(5);
+  digitalWrite(23, HIGH); // trig on
+  delayMicroseconds(10);
+  digitalWrite(23, LOW);
+  int duration = pulseIn(port, HIGH);
+  pinMode(port, INPUT);
+  return double((duration/2)/74);
+  
+}
 
-//void set_claw(int ang){
-//  // 0 for stright forward
-//  // 90 for open
-//  // -90 for closed;
-//  int left = 90 - ang;
-//  int right = ang + 90;
+int theta = 90;
+boolean radar_pos = true;
+
+int data[181];
+int point[2];
+
+int lazer_measure(){
+  VL53L0X_RangingMeasurementData_t measure;
+    
+//  Serial.print("Reading a measurement... ");
+  lox.rangingTest(&measure, false); // pass in 'true' to get debug data printout!
+
+  if (measure.RangeStatus != 4) {  // phase failures have incorrect data
+//    Serial.print("Distance (mm): "); 
+//    Serial.println(measure.RangeMilliMeter);
+  } else {
+//    Serial.println(" out of range ");
+      return 0;
+  }
+  return measure.RangeMilliMeter;
+}
+
+void measure_dir(int theta){
+  Cservo.write(theta);
+  delay(10);
+  data[theta] = lazer_measure();
+  
+  return;
+}
+
+void update_radar(){
+  if(radar_pos){
+    theta++;
+  }else{
+    theta--;  
+  }
+
+  measure_dir(theta);
+  
+//  if(theta == 180 && radar_pos){
+//    radar_pos = false;
+//    Serial.println("c");
+//    Serial.println("c");
+//    }
 //
-//  Lservo.write(left);
-//  Rservo.write(right);
-//}
+//  if(theta == 0 && !radar_pos){
+//    radar_pos = true;
+//    Serial.println("c");
+//    Serial.println("c");
+//    }
+  
+  return;
+}
+
+int polar_to_cartesian(){
+  double theta = M_PI * data[0] / 180;
+  int y = data[1] * sin(theta);
+  int x = data[1] * cos(theta);
+  int op[2];
+  point[0] = x;
+  point[1] = y;
+
+  return op;
+}
+
+void set_claw(int ang){
+  // 0 for stright forward
+  // 90 for open
+  // -90 for closed;
+  int left = 90 - ang;
+  int right = ang + 90;
+
+  Lservo.write(left);
+  Rservo.write(right);
+
 //  printf("claw output: %d %d",left, right);
 
 //  Serial.print(String(left) + " " + String(right));
@@ -424,52 +425,69 @@ void Move(int left, int right){
 //  }
 //}
 
-//void competition_logic(){
-//  int state = 1;
-//
-//  switch(state){
-//
-//    case 0:
-//      Move(0, 0);
-//
-//    case 1:
-//      if(turn(90)){
-//          state = 0;
-//        }
-//
-//    default:
-//      Move(0, 0);
-//    
-//  boolean courseEnd = false;
-//  while (FLinches >= 5 && FRinches >= 5){
-//    Move(500,500);
-//  }
-//  if (FLinches < 5 && FRinches < 5){
-//    if (Rinches <= Linches){
-//      Move(250, 500);
-//      delay(2000);
-//    }
-//    else{
-//      Move(500,250);
-//    }
-//    while (Linches < 4){
-//      Move(500,500);
-//    }
-//    if (Linches >= 4){
-//      Move(250, 500);
-//      delay(2000);
-//    }
-//    else if (Linches < 4 && FLinches >= 5 && FRinches >= 5){
-//      // open claw
-//      courseEnd = true;
-//    }
-//    if (courseEnd){
-//      Serial.println("wahoo");
-//    }
-//  }
-//
-//  
-//}
+int state = 1;
+
+void competition_logic(){
+
+  switch(state){
+
+    case 0:
+    //wait at the start
+      Move(0, 0);
+
+    case 1:
+    //locate obstical
+      
+    case 2:
+    //avoid obstical
+      if(turn(90)){
+          state = 0;
+        }
+    case 3:
+    //find object
+
+    case 4:
+    //goto object
+
+    case 5:
+    //move into circle
+
+    caes 6:
+    //stop at circle
+
+    default:
+      Move(0, 0);
+    
+  boolean courseEnd = false;
+  while (FLinches >= 5 && FRinches >= 5){
+    Move(500,500);
+  }
+  if (FLinches < 5 && FRinches < 5){
+    if (Rinches <= Linches){
+      Move(250, 500);
+      delay(2000);
+    }
+    else{
+      Move(500,250);
+    }
+    while (Linches < 4){
+      Move(500,500);
+    }
+    if (Linches >= 4){
+      Move(250, 500);
+      delay(2000);
+    }
+    else if (Linches < 4 && FLinches >= 5 && FRinches >= 5){
+      // open claw
+      courseEnd = true;
+    }
+    if (courseEnd){
+      Serial.println("wahoo");
+    }
+  }
+
+  
+}
 
 void loop(){
 //  routine_periodic();
