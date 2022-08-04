@@ -29,10 +29,10 @@ Servo Rservo;
 Servo Cservo;
 
 // motor var setups
-int rightIn1 = 49; //front
-int rightIn2 = 50; // front
-int rightIn3 = 51; // back
-int rightIn4 = 52; // back
+int rightIn1 = 50; //front
+int rightIn2 = 51; // front
+int rightIn3 = 52; // back
+int rightIn4 = 53; // back
 int rightENA = 4; // front
 int rightENB = 5; // back
 
@@ -169,7 +169,7 @@ void Move(int left, int right){
     
   }
     if (right < 0){
-     digitalWrite(rightIn1, LOW);
+    digitalWrite(rightIn1, LOW);
     digitalWrite(rightIn2, HIGH);
     digitalWrite(rightIn3, LOW);
     digitalWrite(rightIn4, HIGH);
