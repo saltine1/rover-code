@@ -21,7 +21,7 @@ int FRtrigPin = 49;
 int FLduration, Lduration, Rduration, FRduration, FLinches, Linches, Rinches, FRinches;
 
 // servo var setups
-int LservoPin = 3; // left servo
+int LservoPin = 1; // left servo
 int RservoPin = 2; // right servo
 int CservoPin = 12; // center servo
 Servo Lservo;
