@@ -170,7 +170,7 @@ void Move(int left, int right){
     digitalWrite(rightIn4, LOW);
   }
   
-  analogWrite(leftENA, int(abs(double(left))/1000*255));
+  analogWrite(leftENA, int(abs(double(left))/1000*255*1));
   analogWrite(leftENB, int(abs(double(left))/1000*255));
   analogWrite(rightENA, int(abs(double(right))/1000*255));
   analogWrite(rightENB, int(abs(double(right))/1000*255));
@@ -216,42 +216,50 @@ int laser_measure(){
 //    Serial.println(measure.RangeMilliMeter);
   } else {
 //    Serial.println(" out of range ");
-      return 0;
+      return -1;
   }
   return measure.RangeMilliMeter;
 }
 
 int measure_dir(int theta){
   Cservo.write(theta);
-  delay(10);
+  delay(40);
   data[theta] = laser_measure();
   
   return data[theta];
 }
 
-void update_radar(){
-  if(radar_pos){
-    theta++;
-  }else{
-    theta--;  
+int radar_scan(){
+  measure_dir(0);
+  delay(500);
+  for(int i=0; i<181; i++){
+    measure_dir(i);
   }
-
-  measure_dir(theta);
-  
-//  if(theta == 180 && radar_pos){
-//    radar_pos = false;
-//    Serial.println("c");
-//    Serial.println("c");
-//    }
-//
-//  if(theta == 0 && !radar_pos){
-//    radar_pos = true;
-//    Serial.println("c");
-//    Serial.println("c");
-//    }
-  
-  return;
 }
+
+//void update_radar(){
+//  if(radar_pos){
+//    theta++;
+//  }else{
+//    theta--;  
+//  }
+//
+//  measure_dir(theta);
+//  
+////  if(theta == 180 && radar_pos){
+////    radar_pos = false;
+////    Serial.println("c");
+////    Serial.println("c");
+////    }
+////
+////  if(theta == 0 && !radar_pos){
+////    radar_pos = true;
+////    Serial.println("c");
+////    Serial.println("c");
+////    }
+//  
+//  return;
+//}
 
 int polar_to_cartesian(){
   double theta = M_PI * data[0] / 180;
@@ -307,7 +315,7 @@ boolean Turn(int deg){
     return false;
   }
 
-//  Serial.printf()
+  Serial.println(String(get_gyro()) + "  " + String(pid));
   
 }
 
@@ -350,12 +358,14 @@ void testing_periodic(){
 //  set_claw(45);
 //  delay(1000);
 
-  for(int i=0; i<4; i++){
-      Serial.print(ultrasonicDistance(i));
-      Serial.print(" ");
-    }
+//  for(int i=0; i<4; i++){
+//      Serial.print(ultrasonicDistance(i));
+//      Serial.print(" ");
+//    }
+//
+//    Serial.println();
 
-    Serial.println();
+  Turn(90);
 
 
  }
@@ -430,19 +440,21 @@ void ultrasonic_logic(){
 void routine_periodic(){
   update_gyro();
   set_timer();
-  int d = laser_measure();
+//  int d = laser_measure();
 
-  for(int i=0; i<1 ;i++){
-  update_radar();
-  polar_to_cartesian();
-//  Serial.println();
-//  delay(100);
-  }
+//  for(int i=0; i<1 ;i++){
+//  update_radar();
+//  polar_to_cartesian();
+////  Serial.println();
+////  delay(100);
+//  }
 }
 
 int state = 1;
 
 bool left, mid, right = false;
+
+int obs_cnt = 0;
 
 void competition_logic(){
 
@@ -469,19 +481,22 @@ void competition_logic(){
       state = 2;
       
     case 2:
-    //avoid obstical
+    //avoid obstical part 1
       if(!mid){
+        // stright pass
         Move(500, 500);
         delay(5000);
         state = 3;
       }else if(!left){
+        // left 
         if(Turn(-25)){
           Move(500, 500);
           delay(5000);
-          state = 3;
+          state = 4;
         }
 
       }else{
+        //right
         if(Turn(25)){
           Move(500, 500);
           delay(5000);
@@ -490,18 +505,43 @@ void competition_logic(){
       }
  
     case 3:
-    //repeat till end
+    //avoid obstical part 2
+    
+    if(!left){
+      // left 
+      if(Turn(25)){
+        Move(500, 500);
+        delay(5000);
+        state = 4;
+      }
+
+    }else{
+      //right
+      if(Turn(-25)){
+        Move(500, 500);
+        delay(5000);
+        state = 3;
+      }
+    }
     
     case 4:
-    //find object
+    // count obstical, return to 1
+    obs_cnt++;
+    if(obs_cnt >= 4){
+      state = 5;
+    }
 
     case 5:
-    //goto object
+    //find object
+    Turn(90);
 
     case 6:
-    //move into circle
+    //goto object
 
     case 7:
+    //move into circle
+
+    case 8:
     //stop at circle
 
     default:
@@ -543,7 +583,53 @@ void loop() {
   Serial.println("loop running");
   
   routine_periodic();
-  testing_periodic();
+//  testing_periodic();
+
+//  Serial.println(get_gyro());
+//  Serial.println(measure_dir(90));
+
+    Move(500, 500);
+    delay(2500);
+
+    Move(0, 0);
+    delay(2500);
+
+//  Move(-500, 500);
+//  delay(1800);
+//
+//  Move(500, -500);
+//  delay(1800);
+//
+//  Move(0, 0);
+//  delay(5000);
+
+//  radar_scan();
+//
+//  int min_r = 1000;
+//  int min_dir = 90;
+//
+////  Serial.println(String(min_r));
+//  
+//  for(int i=45; i<135; i++){
+//    if(data[i]<=0){
+//      continue;
+//      }
+//    if(data[i] < min_r){
+//      min_r = data[i];
+//      min_dir = i;
+//      Serial.println("new min");
+//    }
+//    Serial.println(String(i) + " " + String(data[i]));
+//    Serial.println(String(min_r) + " " + String(data[i] < min_r));
+//  }
+//
+//  Serial.println("found at:" + String(min_dir));
+//
+//  Cservo.write(min_dir);
+//
+//  Serial.print(measure_dir(90));
+//
+//  delay(5000);
 
 //  competition_logic();
 
