@@ -6,17 +6,18 @@
 #include <basicMPU6050.h> 
 
 // sensor var setups
-int FLechoPin = 26; // front left sensor
-int FLtrigPin = 27;
 
 int LechoPin = 10; // left sensor
 int LtrigPin = 11;
 
-int RechoPin = 8; // right sensor
-int RtrigPin = 9;
+int FLechoPin = 26; // front left sensor
+int FLtrigPin = 27;
 
 int FRechoPin = 48; // front right sensor
 int FRtrigPin = 49;
+
+int RechoPin = 8; // right sensor
+int RtrigPin = 9;
 
 int FLduration, Lduration, Rduration, FRduration, FLinches, Linches, Rinches, FRinches;
 
@@ -72,39 +73,6 @@ int leftENB = 7; // back
 //
 //Adafruit_VL53L0X lox = Adafruit_VL53L0X();
 
-void Move(int left, int right){
-//  Serial.println("moving");
-  if (left < 0){
-    digitalWrite(leftIn1, LOW);
-    digitalWrite(leftIn2, HIGH);
-    digitalWrite(leftIn3, LOW);
-    digitalWrite(leftIn4, HIGH);
-  }
-  else{
-    digitalWrite(leftIn1, HIGH);
-    digitalWrite(leftIn2, LOW);
-    digitalWrite(leftIn3, HIGH);
-    digitalWrite(leftIn4, LOW);
-    
-  }
-    if (right < 0){
-     digitalWrite(rightIn1, LOW);
-    digitalWrite(rightIn2, HIGH);
-    digitalWrite(rightIn3, LOW);
-    digitalWrite(rightIn4, HIGH);
-  }
-  else{
-    digitalWrite(rightIn1, HIGH);
-    digitalWrite(rightIn2, LOW);
-    digitalWrite(rightIn3, HIGH);
-    digitalWrite(rightIn4, LOW);
-  }
-  analogWrite(leftENA, int(abs(double(left))/1000*255));
-  analogWrite(leftENB, int(abs(double(left))/1000*255));
-  analogWrite(rightENA, int(abs(double(right))/1000*255));
-  analogWrite(rightENB, int(abs(double(right))/1000*255));
-}
-
 
 void setup() {
   Serial.begin(9600);
@@ -114,13 +82,13 @@ void setup() {
   pinMode(FLtrigPin, OUTPUT); // trig front right
   
   pinMode(LechoPin, INPUT); // echo left
-  pinMode(LechoPin, OUTPUT); // trig left
+  pinMode(LtrigPin, OUTPUT); // trig left
   
   pinMode(RechoPin, INPUT); // echo right
   pinMode(RtrigPin, OUTPUT); // trig right
   
   pinMode(FRechoPin, INPUT); // echo front right
-  pinMode(FRechoPin, OUTPUT); // trig front right
+  pinMode(FRtrigPin, OUTPUT); // trig front right
   
   // motor pin setups
   pinMode(leftIn1, OUTPUT); // front left
@@ -159,20 +127,54 @@ void setup() {
 //    delay(1);
 //  }
   
-//  Serial.println("Adafruit VL53L0X test");
-//  if (!lox.begin()) {
-//    Serial.println(F("Failed to boot VL53L0X"));
-//    Serial.println(F("Proceeding without laser sensor"));
-//  }
-//
-//  Serial.println("Laser sensor started succsessfully");
-//
-//  set_claw(0);
-//  
-//  delay(5000);
-//
-//  Serial.print("Setup complete");
-//}
+  Serial.println("Adafruit VL53L0X test");
+  if (!lox.begin()) {
+    Serial.println(F("Failed to boot VL53L0X"));
+    Serial.println(F("Proceeding without laser sensor"));
+  }
+
+  Serial.println("Laser sensor started succsessfully");
+
+  set_claw(0);
+  
+  delay(5000);
+
+  Serial.println("Setup complete");
+}
+
+void Move(int left, int right){
+//  Serial.println("moving");
+  if (left < 0){
+    digitalWrite(leftIn1, LOW);
+    digitalWrite(leftIn2, HIGH);
+    digitalWrite(leftIn3, LOW);
+    digitalWrite(leftIn4, HIGH);
+  }
+  else{
+    digitalWrite(leftIn1, HIGH);
+    digitalWrite(leftIn2, LOW);
+    digitalWrite(leftIn3, HIGH);
+    digitalWrite(leftIn4, LOW);
+    
+  }
+    if (right < 0){
+    digitalWrite(rightIn1, LOW);
+    digitalWrite(rightIn2, HIGH);
+    digitalWrite(rightIn3, LOW);
+    digitalWrite(rightIn4, HIGH);
+  }
+  else{
+    digitalWrite(rightIn1, HIGH);
+    digitalWrite(rightIn2, LOW);
+    digitalWrite(rightIn3, HIGH);
+    digitalWrite(rightIn4, LOW);
+  }
+  
+  analogWrite(leftENA, int(abs(double(left))/1000*255));
+  analogWrite(leftENB, int(abs(double(left))/1000*255));
+  analogWrite(rightENA, int(abs(double(right))/1000*255));
+  analogWrite(rightENB, int(abs(double(right))/1000*255));
+}
 
 void trigOnOff(int trigPinNum) {
   digitalWrite(trigPinNum, LOW); // trig off
@@ -182,59 +184,59 @@ void trigOnOff(int trigPinNum) {
   digitalWrite(trigPinNum, LOW);
 }
 
-//int ports[] = {LechoPin, FLechoPin, FRechoPin, RechoPin};
+int echo_ports[] = {LechoPin, FLechoPin, FRechoPin, RechoPin};
+int trig_ports[] = {LtrigPin, FLtrigPin, FRtrigPin, RtrigPin};
+double ultrasonicDistance(int n){
+  int echo = echo_ports[n];
+  int trig = trig_ports[n];
+  digitalWrite(trig, LOW); // trig off
+  delayMicroseconds(5);
+  digitalWrite(trig, HIGH); // trig on
+  delayMicroseconds(10);
+  digitalWrite(trig, LOW);
+  int duration = pulseIn(echo, HIGH);
+  pinMode(echo, INPUT);
+  return double((duration/2)/74);
+}
 
-//double ultrasonicDistance(int N){
-//  int port = ports[N];
-//  digitalWrite(23, LOW); // trig off
-//  delayMicroseconds(5);
-//  digitalWrite(23, HIGH); // trig on
-//  delayMicroseconds(10);
-//  digitalWrite(23, LOW);
-//  int duration = pulseIn(port, HIGH);
-//  pinMode(port, INPUT);
-//  return double((duration/2)/74);
-//  
-//}
+int theta = 90;
+boolean radar_pos = true;
 
-//int theta = 90;
-//boolean radar_pos = true;
-//
-//int data[181];
-//int point[2];
-//
-//int lazer_measure(){
-//  VL53L0X_RangingMeasurementData_t measure;
-//    
-////  Serial.print("Reading a measurement... ");
-//  lox.rangingTest(&measure, false); // pass in 'true' to get debug data printout!
-//
-//  if (measure.RangeStatus != 4) {  // phase failures have incorrect data
-////    Serial.print("Distance (mm): "); 
-////    Serial.println(measure.RangeMilliMeter);
-//  } else {
-////    Serial.println(" out of range ");
-//      return 0;
-//  }
-//  return measure.RangeMilliMeter;
-//}
-//
-//void measure_dir(int theta){
-//  Cservo.write(theta);
-//  delay(10);
-//  data[theta] = lazer_measure();
-//  
-//  return;
-//}
-//
-//void update_radar(){
-//  if(radar_pos){
-//    theta++;
-//  }else{
-//    theta--;  
-//  }
-//
-//  measure_dir(theta);
+int data[181];
+int point[2];
+
+int laser_measure(){
+  VL53L0X_RangingMeasurementData_t measure;
+    
+//  Serial.print("Reading a measurement... ");
+  lox.rangingTest(&measure, false); // pass in 'true' to get debug data printout!
+
+  if (measure.RangeStatus != 4) {  // phase failures have incorrect data
+//    Serial.print("Distance (mm): "); 
+//    Serial.println(measure.RangeMilliMeter);
+  } else {
+//    Serial.println(" out of range ");
+      return 0;
+  }
+  return measure.RangeMilliMeter;
+}
+
+int measure_dir(int theta){
+  Cservo.write(theta);
+  delay(10);
+  data[theta] = laser_measure();
+  
+  return data[theta];
+}
+
+void update_radar(){
+  if(radar_pos){
+    theta++;
+  }else{
+    theta--;  
+  }
+
+  measure_dir(theta);
   
 //  if(theta == 180 && radar_pos){
 //    radar_pos = false;
@@ -277,33 +279,33 @@ void set_claw(int ang){
   Serial.println(String(left) + " " + String(right));
 }
 
-//boolean turnStarted = false;
-//double tarAng;
-//
-//double ang_prevError = 0;
-//
-//const double kp = 0.1;
-//const double kd = 0.05;
-//
-//boolean turn(int deg){
-//  if(!turnStarted){
-//      tarAng = get_gyro() + deg;
-//    }
-//
-//  double error = get_gyro() - tarAng;
-//
-//  double de = error - ang_prevError;
-//
-//  double pid = kp * error + kd * de;
-//
-//  Move(-pid, pid);
-//
-//  if(abs(de) < 0.5){
-//    turnStarted = false;
-//    return true;
-//  }else{
-//    return false;
-//  }
+boolean turnStarted = false;
+double tarAng;
+
+double ang_prevError = 0;
+
+const double kp = 0.1;
+const double kd = 0.05;
+
+boolean Turn(int deg){
+  if(!turnStarted){
+      tarAng = get_gyro() + deg;
+    }
+
+  double error = get_gyro() - tarAng;
+
+  double de = error - ang_prevError;
+
+  double pid = kp * error + kd * de;
+
+  Move(-pid, pid);
+
+  if(abs(de) < 0.5){
+    turnStarted = false;
+    return true;
+  }else{
+    return false;
+  }
 
 //  Serial.printf()
   
@@ -337,15 +339,25 @@ void testing_periodic(){
 //  Move(500, 100);
 //  delay(2000);
 //  Move(-500, -500);
+//  ,
 //  delay(2000);
 
 //  Serial.println("go");
 
-  set_claw(90);
-  delay(1000);
+//  set_claw(90);
+//  delay(1000);
+//
+//  set_claw(45);
+//  delay(1000);
 
-  set_claw(45);
-  delay(1000);
+  for(int i=0; i<4; i++){
+      Serial.print(ultrasonicDistance(i));
+      Serial.print(" ");
+    }
+
+    Serial.println();
+
+
  }
 
 //
@@ -414,66 +426,102 @@ void ultrasonic_logic(){
 
   }
 //  
-//void routine_periodic(){
-//  update_gyro();
-//  set_timer();
-//  int d = lazer_measure();
-//
-//  for(int i=0; i<1 ;i++){
-//  update_radar();
-//  polar_to_cartesian();
-////  Serial.println();
-////  delay(100);
-//  }
-//}
+void routine_periodic(){
+  update_gyro();
+  set_timer();
+  int d = laser_measure();
 
-//int state = 1;
-//
+  for(int i=0; i<1 ;i++){
+  update_radar();
+  polar_to_cartesian();
+//  Serial.println();
+//  delay(100);
+  }
+}
+
+int state = 1;
+
+bool left, mid, right = false;
+
 void competition_logic(){
-//
-//  switch(state){
-//
-//    case 0:
-//    //wait at the start
-//      Move(0, 0);
-//
-//    case 1:
-//    //locate obstical
-//      
-//    case 2:
-//    //avoid obstical
-//      if(turn(90)){
-//          state = 0;
-//        }
-//    case 3:
-//    //find object
-//
-//    case 4:
-//    //goto object
-//
-//    case 5:
-//    //move into circle
-//
-//    case 6:
-//    //stop at circle
-//
-//    default:
-//      Move(0, 0);
-//  }
-  ultrasonic_logic();
+
+  switch(state){
+
+    case 0:
+    //wait at the start
+      Move(0, 0);
+      delay(5000);
+
+    case 1:
+    //locate obstical
+      if(measure_dir(75) < 1000){
+        left = true;
+        }
+      if(measure_dir(90) < 1000){
+        mid = true;
+      }
+
+      if(measure_dir(115) < 1000){
+        right = true;
+      }
+
+      state = 2;
+      
+    case 2:
+    //avoid obstical
+      if(!mid){
+        Move(500, 500);
+        delay(5000);
+        state = 3;
+      }else if(!left){
+        if(Turn(-25)){
+          Move(500, 500);
+          delay(5000);
+          state = 3;
+        }
+
+      }else{
+        if(Turn(25)){
+          Move(500, 500);
+          delay(5000);
+          state = 3;
+        }
+      }
+ 
+    case 3:
+    //repeat till end
+    
+    case 4:
+    //find object
+
+    case 5:
+    //goto object
+
+    case 6:
+    //move into circle
+
+    case 7:
+    //stop at circle
+
+    default:
+      Move(0, 0);
+  }
+  
   boolean courseEnd = false;
   for (int abc; abc < 4; abc++){
     while (FLinches >= 5 && FRinches >= 5){
       Move(500,500);
     }
-    if (FLinches < 5 && FRinches < 5){
-      if (Rinches <= Linches){
-        Move(250, 500);
-        delay(2000);
-      }
-      else{
-        Move(500,250);
-      }
+    if (Linches >= 4){
+      Move(250, 500);
+      delay(2000);
+    }
+    else if (Linches < 4 && FLinches >= 5 && FRinches >= 5){
+      // open claw
+      courseEnd = true;
+    }
+    if (courseEnd){
+      Serial.println("wahoo");
     }
       while (Linches < 4){
         Move(500,500);
@@ -498,5 +546,9 @@ void competition_logic(){
 void loop() {
   ultrasonic_logic();
   competition_logic();
+  Serial.println("loop running");
+  
+  routine_periodic();
+  testing_periodic();
 
 }
