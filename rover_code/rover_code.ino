@@ -43,35 +43,35 @@ int leftIn3 = 24; // back
 int leftIn4 = 25; // back
 int leftENA = 6; // front
 int leftENB = 7; // back
-//
-//// Create gyro instance
-//basicMPU6050<> imu;
-//
-//double cur_gyro = 0;
-//int t_prev;
-//
-//void set_timer(){
-//  t_prev = millis();
-//  }
-//
-//int get_dt(){
-//  return millis() - t_prev;
-//  }
-//
-//void reset_gyro(){
-//  cur_gyro = 0;
-//  }
-//
-//void update_gyro(){
-//  imu.updateBias();
-//  cur_gyro += 0.001 * get_dt() * imu.gz();
-//  }
-//
-//double get_gyro(){
-//  return cur_gyro;
-//  }
-//
-//Adafruit_VL53L0X lox = Adafruit_VL53L0X();
+
+// Create gyro instance
+basicMPU6050<> imu;
+
+double cur_gyro = 0;
+int t_prev;
+
+void set_timer(){
+  t_prev = millis();
+  }
+
+int get_dt(){
+  return millis() - t_prev;
+  }
+
+void reset_gyro(){
+  cur_gyro = 0;
+  }
+
+void update_gyro(){
+  imu.updateBias();
+  cur_gyro += 0.001 * get_dt() * imu.gz();
+  }
+
+double get_gyro(){
+  return cur_gyro;
+  }
+
+Adafruit_VL53L0X lox = Adafruit_VL53L0X();
 
 
 void setup() {
@@ -112,15 +112,15 @@ void setup() {
   Rservo.attach(RservoPin);
   Lservo.attach(LservoPin);
   Cservo.attach(CservoPin);
-}
-//  // Set registers - Always required
-//  imu.setup();
-//
-//  // Initial calibration of gyro
-//  imu.setBias();
+  
+  // Set registers - Always required
+  imu.setup();
 
-//  set_timer();
-//  Serial.println("done!");
+  // Initial calibration of gyro
+  imu.setBias();
+
+  set_timer();
+  Serial.println("done!");
 
   // wait until serial port opens for native USB devices
 //  while (! Serial) {
@@ -250,19 +250,19 @@ void update_radar(){
 //    Serial.println("c");
 //    }
   
-//  return;
-//}
+  return;
+}
 
-//int polar_to_cartesian(){
-//  double theta = M_PI * data[0] / 180;
-//  int y = data[1] * sin(theta);
-//  int x = data[1] * cos(theta);
-//  int op[2];
-//  point[0] = x;
-//  point[1] = y;
-//
-//  return op;
-//}
+int polar_to_cartesian(){
+  double theta = M_PI * data[0] / 180;
+  int y = data[1] * sin(theta);
+  int x = data[1] * cos(theta);
+  int op[2];
+  point[0] = x;
+  point[1] = y;
+
+  return op;
+}
 
 void set_claw(int ang){
   // 0 for stright forward
@@ -309,7 +309,7 @@ boolean Turn(int deg){
 
 //  Serial.printf()
   
-//}
+}
 
 void testing_periodic(){
   
@@ -360,48 +360,48 @@ void testing_periodic(){
 
  }
 
-//
-//int claw_ang = 0;
-//
-//// serial read var setup
-//char controlInput = 0;
-//
-//void keyboard_control(){
-//
-//  controlInput = Serial.read();
-//  
-//  if (controlInput == 'w'){
-//   Move(500, 500);
-//   delay(100); 
-//  }
-//  else if (controlInput == 's'){
-//    Move(-500, -500);
-//   delay(100); 
-//  }
-//  else if (controlInput == 'a'){
-//    Move(-500, 500);
-//   delay(100); 
-//  }
-//  else if (controlInput == 'd'){
-//    Move(500, -500);
-//   delay(100); 
-//  }
-//  else if (controlInput == 'j'){
-//    //claw open
-//    claw_ang ++; 
-//    set_claw(claw_ang);
-//  }
-//  else if (controlInput == 'k'){
-//    // claw close;
-//    claw_ang ++; 
-//    set_claw(claw_ang);
-//  }else{
-//    Move(0, 0);
-//  }
+
+int claw_ang = 0;
+
+// serial read var setup
+char controlInput = 0;
+
+void keyboard_control(){
+
+  controlInput = Serial.read();
+  
+  if (controlInput == 'w'){
+   Move(500, 500);
+   delay(100); 
+  }
+  else if (controlInput == 's'){
+    Move(-500, -500);
+   delay(100); 
+  }
+  else if (controlInput == 'a'){
+    Move(-500, 500);
+   delay(100); 
+  }
+  else if (controlInput == 'd'){
+    Move(500, -500);
+   delay(100); 
+  }
+  else if (controlInput == 'j'){
+    //claw open
+    claw_ang ++; 
+    set_claw(claw_ang);
+  }
+  else if (controlInput == 'k'){
+    // claw close;
+    claw_ang ++; 
+    set_claw(claw_ang);
+  }else{
+    Move(0, 0);
+  }
 
 //  Serial.println(controlInput);
 
-//}
+}
 
 void ultrasonic_logic(){
   // Measure the distance from obstacles using ultrasonic sensors as it goes forwards
@@ -418,6 +418,7 @@ void ultrasonic_logic(){
   Rduration = pulseIn(RechoPin, HIGH); // right sensor
   pinMode(FRechoPin, INPUT);
   FRduration= pulseIn(FRechoPin, HIGH); // front right sensor
+
   // convert duration to inches
   FLinches = (FLduration/2)/74; // front left
   Linches = (Linches/2)/74; // left
@@ -508,8 +509,18 @@ void competition_logic(){
   }
   
   boolean courseEnd = false;
-  for (int abc; abc < 4; abc++){
-    while (FLinches >= 5 && FRinches >= 5){
+  while (FLinches >= 5 && FRinches >= 5){
+    Move(500,500);
+  }
+  if (FLinches < 5 && FRinches < 5){
+    if (Rinches <= Linches){
+      Move(250, 500);
+      delay(2000);
+    }
+    else{
+      Move(500,250);
+    }
+    while (Linches < 4){
       Move(500,500);
     }
     if (Linches >= 4){
@@ -523,32 +534,19 @@ void competition_logic(){
     if (courseEnd){
       Serial.println("wahoo");
     }
-      while (Linches < 4){
-        Move(500,500);
-      }
-//      if (Linches >= 4){
-//        Move(250, 500);
-//        delay(2000);
-//      }
-//    
-//    else if (Linches < 4 && FLinches >= 5 && FRinches >= 5){
-//      // open claw
-//      courseEnd = true;
-//    }
-//    if (courseEnd){
-//      Serial.println("wahoo"); // :D
-//    }
   }
 
-//  
-//}
+  
 }
+
 void loop() {
-  ultrasonic_logic();
-  competition_logic();
   Serial.println("loop running");
   
   routine_periodic();
   testing_periodic();
 
+//  competition_logic();
+
+//  keyboard_control();
+  
 }
