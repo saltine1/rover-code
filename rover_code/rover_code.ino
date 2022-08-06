@@ -583,16 +583,19 @@ void loop() {
   Serial.println("loop running");
   
   routine_periodic();
+
+  Turn(90);
+  
 //  testing_periodic();
 
-//  Serial.println(get_gyro());
+  Serial.println(get_gyro());
 //  Serial.println(measure_dir(90));
 
-    Move(500, 500);
-    delay(2500);
-
-    Move(0, 0);
-    delay(2500);
+//    Move(500, 500);
+//    delay(2500);
+//
+//    Move(0, 0);
+//    delay(2500);
 
 //  Move(-500, 500);
 //  delay(1800);
